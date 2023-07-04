@@ -7,9 +7,6 @@ from rest_framework_simplejwt.views import (
     TokenRefreshView,
 )
 
-from rest_framework.routers import DefaultRouter
-from apps.users.api import UserViewSet
-
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('products/', include('apps.products.urls')),
@@ -18,8 +15,3 @@ urlpatterns = [
     path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path("api/v1/docs/", include_docs_urls(title = "Zebrands Backend users")),    
 ]
-
-# router = DefaultRouter()
-# router.register('',UserViewSet,basename='user')
-
-# urlpatterns += router.urls

@@ -2,6 +2,7 @@ import os
 from pathlib import Path
 from decouple import config
 from datetime import timedelta
+import dj_database_url
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -17,14 +18,9 @@ except KeyError as e:
 
 # Variables for the db
 try:
-    DB_ENGINE = config("DB_ENGINE")
+    DBEXTERNAL =  config("DBEXTERNAL")
 except KeyError as e:
-    raise RuntimeError("Could not find a DB_ENGINE in environment")
-
-try:
-    SQL_NAME = config("SQL_NAME")
-except KeyError as e:
-    raise RuntimeError("Could not find a SQL_NAME in environment")
+    raise RuntimeError("Could not find a Postgres variables in environment")
 
 
 # Variables for the email services
@@ -46,31 +42,10 @@ try:
 except KeyError as e:
     raise RuntimeError("Could not find a EMAIL_HOST_PASSWORD in environment")
 
+ALLOWED_HOSTS = ['*']
 
-ALLOWED_HOSTS = []
-
-# CSRF_ORIGIN_WHITELIST = config("CSRF_ORIGIN_WHITELIST_DEV")
-# CSRF_TRUSTED_ORIGIN = config("CSRF_TRUSTED_ORIGIN_DEV")
-
-# LOGGIN = {
-#     'version':1,
-#     'disable_existing_loggers':False,
-#     'handlers': {
-#         'console': {
-#             'class': 'loggin.StreamHanlder',
-#         },
-#     },
-#     'loggers':{
-#         'django': {
-#             'handlers': ['console'],
-#             'level': 'DEBUD',
-#         }
-#     }
-# }
- 
 SITE_ID=1
 
-# Application definition
 DJANGO_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -131,10 +106,7 @@ WSGI_APPLICATION = 'core.wsgi.application'
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
 DATABASES = {
-    'default': {
-        'ENGINE': DB_ENGINE,
-        'NAME': BASE_DIR / SQL_NAME,
-    }
+    'default': dj_database_url.parse(DBEXTERNAL)
 }
 
 

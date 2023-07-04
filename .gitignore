@@ -177,3 +177,5 @@ cython_debug/
 external
 envproducts
 requirements.txt
+docker-compose.yml
+Dockerfile
