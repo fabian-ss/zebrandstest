@@ -33,7 +33,7 @@ class ProductViewSet(viewsets.ModelViewSet):
     def retrieve(self, request, pk=None):
         product = self.get_queryset(pk)
         product_serializer = self.get_serializer(product)
-        if self.request.user.is_authenticated == False:
+        if self.request.user.is_authenticated == False and product != None:
             product.counter += 1
             product.save()
             return Response(product_serializer.data,status=status.HTTP_200_OK)

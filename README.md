@@ -1,5 +1,9 @@
 # Zebrands backend test
 
+# Instructions:
+    Download the project
+    In the root folder open a terminal an exec$ python manage.py runserver
+
 ## This project was made using WSL and the next techs:
     Django
     Django-restframework
@@ -9,6 +13,8 @@
 This is REST project than was made with Django-rest framework
 
 Project features:
+
+- For the database I am using Postgres from a CLOUD service
 
 - The routes are protected by user authentication and by a jsonJWT, to query almost all routes it is necessary to send the token in the headers.
 
@@ -21,7 +27,6 @@ Project features:
 - An email is sent when a product is edited or deleted.
 
 - .gitignore has been added using the template of https://gitignore.io/
-
 
 # Routes:
 
@@ -41,7 +46,6 @@ URL_BASE = http://127.0.0.1:8000/
 
 /users/api/v1/                 
 /users/api/v1/<id_number>  
-
 
 How works:
     1) Create a user
