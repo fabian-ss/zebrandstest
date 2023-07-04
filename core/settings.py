@@ -5,16 +5,9 @@ from datetime import timedelta
 import dj_database_url
 
 BASE_DIR = Path(__file__).resolve().parent.parent
+SECRET_KEY = os.environ.get('SECRET_KEY', default='your secret key')
+DEBUG = 'DEBUG' not in os.environ
 
-try:
-    SECRET_KEY = config("SECRET_KEY")
-except KeyError as e:
-    raise RuntimeError("Could not find a SECRET_KEY in environment")
-
-try:
-    DEBUG = config("DEBUG")
-except KeyError as e:
-    raise RuntimeError("Could not find a DEBUG in environment")
 
 # Variables for the db
 try:
@@ -44,7 +37,11 @@ except KeyError as e:
 
 ALLOWED_HOSTS = ['*']
 
-SITE_ID=1
+RENDER_EXTERNAL_HOSTNAME = os.environ.get('RENDER_EXTERNAL_HOSTNAME')
+if RENDER_EXTERNAL_HOSTNAME:
+    ALLOWED_HOSTS.append(RENDER_EXTERNAL_HOSTNAME)
+
+# SITE_ID=1
 
 DJANGO_APPS = [
     'django.contrib.admin',
@@ -72,6 +69,7 @@ INSTALLED_APPS = DJANGO_APPS + MY_APPS + THIRD_APPS
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'corsheaders.middleware.CorsMiddleware',    
     'django.middleware.common.CommonMiddleware',
@@ -105,8 +103,14 @@ WSGI_APPLICATION = 'core.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
+
+
 DATABASES = {
-    'default': dj_database_url.parse(DBEXTERNAL)
+      'default': dj_database_url.config(
+        default='postgresql://postgres:postgres@localhost:5432/mysite',
+        conn_max_age=600
+    )
+    # 'default': dj_database_url.parse(DBEXTERNAL)
 }
 
 
@@ -144,7 +148,17 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
-STATIC_URL = 'static/'
+STATIC_URL = '/static/'
+
+# Following settings only make sense on production and may break development environments.
+if not DEBUG:
+    # Tell Django to copy statics to the `staticfiles` directory
+    # in your application directory on Render.
+    STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+
+    # Turn on WhiteNoise storage backend that takes care of compressing static files
+    # and creating unique names for each version so they can safely be cached forever.
+    STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field

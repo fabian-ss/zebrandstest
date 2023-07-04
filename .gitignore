@@ -176,5 +176,4 @@ cython_debug/
 # Other files
 external
 envproducts
-docker-compose.yml
-Dockerfile
+requirements.txt

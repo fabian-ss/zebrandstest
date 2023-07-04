@@ -41,3 +41,9 @@ URL_BASE = http://127.0.0.1:8000/
 
 /users/api/v1/                 
 /users/api/v1/<id_number>  
+
+
+How works:
+    1) Create a user
+    2) Get a JWTtoken
+    2) Add the JWTtoken in the header of each request

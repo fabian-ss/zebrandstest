@@ -1,0 +1,98 @@
+version: '2'
+
+services:
+    nginx:
+        restart: always
+        image: nginx:1.23-alpine
+        ports:
+            - 80:80
+        volumes:
+            - ./docker/nginx/default.conf:/etc/nginx/conf.d/default.conf
+            - static_volume:/app/backend/django_static
+    server:
+        restart: unless-stopped
+        build:
+            context: .
+            dockerfile: ./Dockerfile
+        entrypoint: /app/server-entrypoint.sh
+        volumes:
+            - static_volume:/app/backend/django_static
+        expose:
+            - 8000     
+        environment:
+            DJANGO_DB: postgresql
+            POSTGRES_HOST: db
+            POSTGRES_NAME: postgres
+            POSTGRES_USER: postgres
+            POSTGRES_PASSWORD: postgres
+            POSTGRES_PORT: 5432
+    worker:
+        restart: unless-stopped
+        build:
+            context: .
+            dockerfile: ./Dockerfile
+        entrypoint: /app/worker-entrypoint.sh
+        volumes:
+            - static_volume:/app/backend/django_static
+        environment:
+            DJANGO_DB: postgresql
+            POSTGRES_HOST: db
+            POSTGRES_NAME: postgres
+            POSTGRES_USER: postgres
+            POSTGRES_PASSWORD: postgres
+            POSTGRES_PORT: 5432
+        depends_on:
+            - server
+    db:
+        image: postgres:13.0-alpine
+        restart: unless-stopped
+        volumes:
+            - postgres_data:/var/lib/postgresql/data/
+        environment:
+            POSTGRES_DB: postgres
+            POSTGRES_USER: postgres
+            POSTGRES_PASSWORD: postgres
+        expose:
+            - 5432
+    
+volumes:
+    static_volume: {}
+    postgres_data: {}
+
+# version: '3.8'
+
+# services: 
+#   back_auth: 
+#     container_name: zebrands_back_test
+#     build: .
+#     command: bash -c "python manage.py makemigrations && python manage.py migrate && python manage.py createsu && python manage.py runserver 0.0.0.0:8000"
+#     volumes:
+#       - .:/app
+#     ports:
+#       - 8000:8000
+#     depends_on:
+#       - db
+#     environment:
+#       - DB_NAME=zebrandsback
+#       - DB_USER=postgres
+#       - DB_PASSWORD=postgres   
+#       - DB_PORT=5432
+#     links:
+#       - db      
+#   db:
+#     image: postgres
+#     container_name: zebrands_postgres
+#     restart: always
+#     environment:
+#       - POSTGRES_DB=zebrandsback
+#       - POSTGRES_USER=postgres
+#       - POSTGRES_PASSWORD=postgres
+#     ports:
+#       - 5432:5432
+#     volumes:
+#       - ./postgres/data:/var/lib/postgresql/data
+#       - ./postgres/log:/var/log/postgresql 
+
+# volumes:
+#   db:
+#     driver: local      
