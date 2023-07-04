@@ -106,7 +106,7 @@ WSGI_APPLICATION = 'core.wsgi.application'
 
 
 DATABASES = {
-      'default': dj_database_url.config(DBEXTERNAL)
+      'default': dj_database_url.parse(DBEXTERNAL)
     # 'default': dj_database_url.parse(DBEXTERNAL)
 }
 
